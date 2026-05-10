@@ -1,0 +1,54 @@
+[2026-05-10 06:04:03] === AI NEWS AGENT STARTED ===
+[2026-05-10 06:04:03] Memory items: 23
+[2026-05-10 06:04:03] Checking feed: https://openai.com/news/rss.xml
+[2026-05-10 06:04:05] Checking feed: https://www.anthropic.com/news/rss.xml
+[2026-05-10 06:04:10] Checking feed: https://blog.google/technology/ai/rss/
+[2026-05-10 06:04:11] Checking feed: https://huggingface.co/blog/feed.xml
+[2026-05-10 06:04:12] Checking feed: https://hnrss.org/newest?q=AI
+[2026-05-10 06:04:20] Checking feed: https://hnrss.org/newest?q=LLM
+[2026-05-10 06:04:21] Checking feed: https://hnrss.org/newest?q=agents
+[2026-05-10 06:04:22] Checking feed: https://www.reddit.com/r/singularity/.rss
+[2026-05-10 06:04:23] Checking feed: https://www.reddit.com/r/LocalLLaMA/.rss
+[2026-05-10 06:04:24] Filtered news: 15
+[2026-05-10 06:04:27] Groq status: 200
+[2026-05-10 06:04:27] JSON parse error: Expecting property name enclosed in double quotes: line 43 column 4 (char 2251)
+[2026-05-10 06:04:27] Telegram status: 200
+[2026-05-10 06:04:27] Analyzed news count: 0
+[2026-05-10 06:04:28] Telegram status: 200
+[2026-05-10 06:04:28] === DONE ===
+[2026-05-10 06:18:41] === AI NEWS AGENT STARTED ===
+[2026-05-10 06:18:41] Memory items: 38
+[2026-05-10 06:18:41] Checking feed: https://openai.com/news/rss.xml
+[2026-05-10 06:18:43] Checking feed: https://www.anthropic.com/news/rss.xml
+[2026-05-10 06:18:44] Checking feed: https://blog.google/technology/ai/rss/
+[2026-05-10 06:18:45] Checking feed: https://huggingface.co/blog/feed.xml
+[2026-05-10 06:18:46] Checking feed: https://hnrss.org/newest?q=AI
+[2026-05-10 06:18:48] Checking feed: https://hnrss.org/newest?q=LLM
+[2026-05-10 06:18:56] Checking feed: https://hnrss.org/newest?q=agents
+[2026-05-10 06:18:59] Checking feed: https://www.reddit.com/r/singularity/.rss
+[2026-05-10 06:19:00] Checking feed: https://www.reddit.com/r/LocalLLaMA/.rss
+[2026-05-10 06:19:02] Filtered news: 1
+[2026-05-10 06:19:02] Groq status: 200
+[2026-05-10 06:19:02] Analyzed news count: 0
+[2026-05-10 06:19:03] Telegram status: 200
+[2026-05-10 06:19:03] === DONE ===
+[2026-05-10 06:26:11] === AI NEWS AGENT STARTED ===
+[2026-05-10 06:26:11] Memory items: 39
+[2026-05-10 06:26:11] Checking feed: https://openai.com/news/rss.xml
+[2026-05-10 06:26:13] Checking feed: https://www.anthropic.com/news/rss.xml
+[2026-05-10 06:26:15] Checking feed: https://blog.google/technology/ai/rss/
+[2026-05-10 06:26:16] Checking feed: https://huggingface.co/blog/feed.xml
+[2026-05-10 06:26:17] Checking feed: https://hnrss.org/newest?q=AI
+[2026-05-10 06:26:18] Checking feed: https://hnrss.org/newest?q=LLM
+[2026-05-10 06:26:18] Checking feed: https://hnrss.org/newest?q=agents
+[2026-05-10 06:26:19] Checking feed: https://www.reddit.com/r/singularity/.rss
+[2026-05-10 06:26:21] Checking feed: https://www.reddit.com/r/LocalLLaMA/.rss
+[2026-05-10 06:26:22] Filtered news: 15
+[2026-05-10 06:26:24] Groq status: 200
+[2026-05-10 06:26:24] Analyzed news count: 5
+[2026-05-10 06:26:25] Telegram status: 200
+[2026-05-10 06:26:25] Telegram status: 200
+[2026-05-10 06:26:25] Telegram status: 200
+[2026-05-10 06:26:25] Telegram status: 200
+[2026-05-10 06:26:26] Telegram status: 200
+[2026-05-10 06:26:26] === DONE ===

@@ -1,0 +1,47 @@
+{
+  "rss_feeds": [
+    "https://openai.com/news/rss.xml",
+    "https://www.anthropic.com/news/rss.xml",
+    "https://blog.google/technology/ai/rss/",
+    "https://huggingface.co/blog/feed.xml",
+    "https://hnrss.org/newest?q=AI",
+    "https://hnrss.org/newest?q=LLM",
+    "https://hnrss.org/newest?q=agents",
+    "https://www.reddit.com/r/singularity/.rss",
+    "https://www.reddit.com/r/LocalLLaMA/.rss"
+  ],
+
+  "bad_words": [
+    "hiring",
+    "self-promotion",
+    "monthly thread",
+    "job",
+    "career",
+    "sponsor",
+    "ad",
+    "prompt engineering course"
+  ],
+
+  "good_keywords": [
+    "model",
+    "llm",
+    "reasoning",
+    "agent",
+    "robot",
+    "openai",
+    "anthropic",
+    "google",
+    "deepmind",
+    "huggingface",
+    "nvidia",
+    "benchmark",
+    "inference",
+    "robotics",
+    "voice",
+    "automation",
+    "multimodal"
+  ],
+
+  "max_input_news": 15,
+  "max_memory_items": 1000
+}

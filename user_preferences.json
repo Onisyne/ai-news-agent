@@ -1,0 +1,19 @@
+{
+  "liked_topics": [
+    "local_ai",
+    "robotics",
+    "voice",
+    "agents",
+    "smart_home"
+  ],
+  "disliked_topics": [
+    "ai_art",
+    "crypto",
+    "startup_funding"
+  ],
+  "important_companies": [
+    "OpenAI",
+    "Anthropic",
+    "NVIDIA"
+  ]
+}

@@ -5,6 +5,7 @@ import feedparser
 import requests
 
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -13,15 +14,47 @@ CHAT_ID = os.getenv("CHAT_ID")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 MEMORY_FILE = "seen_news.json"
+CONFIG_FILE = "config.json"
+PREFERENCES_FILE = "user_preferences.json"
+PROMPT_FILE = "system_prompt.txt"
+LOG_FILE = "agent.log"
 
-RSS_FEEDS = [
-    "https://hnrss.org/newest?q=AI",
-    "https://openai.com/news/rss.xml",
-    "https://www.anthropic.com/news/rss.xml",
-    "https://blog.google/technology/ai/rss/",
-    "https://huggingface.co/blog/feed.xml",
-    "https://www.reddit.com/r/singularity/.rss"
-]
+
+# =========================
+# LOGGER
+# =========================
+
+def log(message):
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    line = f"[{timestamp}] {message}"
+
+    print(line)
+
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(line + "\n")
+
+
+# =========================
+# LOAD JSON FILES
+# =========================
+
+def load_json(path):
+
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_prompt():
+
+    with open(PROMPT_FILE, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+config = load_json(CONFIG_FILE)
+preferences = load_json(PREFERENCES_FILE)
+system_prompt = load_prompt()
 
 
 # =========================
@@ -37,24 +70,62 @@ def load_memory():
         with open(MEMORY_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    except Exception as e:
-        print("MEMORY LOAD ERROR:", e)
+    except:
         return []
 
 
 def save_memory(memory):
 
-    try:
-        with open(MEMORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(memory, f, ensure_ascii=False, indent=2)
-
-    except Exception as e:
-        print("MEMORY SAVE ERROR:", e)
+    with open(MEMORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(memory, f, ensure_ascii=False, indent=2)
 
 
 def make_news_id(title):
 
-    return hashlib.md5(title.lower().encode()).hexdigest()
+    return hashlib.md5(
+        title.lower().encode()
+    ).hexdigest()
+
+
+# =========================
+# LOCAL SCORING
+# =========================
+
+def calculate_local_score(title):
+
+    score = 0
+
+    title_lower = title.lower()
+
+    # keyword scoring
+    for keyword in config["good_keywords"]:
+
+        if keyword.lower() in title_lower:
+            score += 2
+
+    # company preference scoring
+    for company in preferences["important_companies"]:
+
+        if company.lower() in title_lower:
+            score += 3
+
+    # liked topics
+    for topic in preferences["liked_topics"]:
+
+        normalized = topic.replace("_", " ")
+
+        if normalized.lower() in title_lower:
+            score += 2
+
+    # disliked topics
+    for topic in preferences["disliked_topics"]:
+
+        normalized = topic.replace("_", " ")
+
+        if normalized.lower() in title_lower:
+            score -= 3
+
+    return score
 
 
 # =========================
@@ -67,53 +138,67 @@ def fetch_news(memory):
 
     seen_titles = set()
 
-    bad_words = [
-        "hiring",
-        "self-promotion",
-        "who wants to be hired",
-        "monthly thread",
-        "career",
-        "job"
-    ]
+    for feed_url in config["rss_feeds"]:
 
-    for feed_url in RSS_FEEDS:
-
-        print(f"CHECKING FEED: {feed_url}")
+        log(f"Checking feed: {feed_url}")
 
         feed = feedparser.parse(feed_url)
 
-        for entry in feed.entries[:5]:
+        for entry in feed.entries[:8]:
 
             title = entry.title.strip()
             link = entry.link
 
+            title_lower = title.lower()
+
             news_id = make_news_id(title)
 
-            # MEMORY FILTER
+            # memory filter
             if news_id in memory:
                 continue
 
-            # DUPLICATES FILTER
+            # duplicates
             if title in seen_titles:
                 continue
 
-            # TRASH FILTER
-            if any(word.lower() in title.lower() for word in bad_words):
+            # trash filter
+            if any(
+                word.lower() in title_lower
+                for word in config["bad_words"]
+            ):
                 continue
+
+            local_score = calculate_local_score(title)
+
+            # ignore weak news
+            MIN_SCORE = 1
+            
+            if len(memory) < 50:
+                MIN_SCORE = 0
+            
+            if local_score < MIN_SCORE:
+                continue
+
 
             seen_titles.add(title)
 
             news.append({
                 "id": news_id,
                 "title": title,
-                "url": link
+                "url": link,
+                "local_score": local_score
             })
 
-    return news[:8]
+    news.sort(
+        key=lambda x: x["local_score"],
+        reverse=True
+    )
+
+    return news[:config["max_input_news"]]
 
 
 # =========================
-# GROQ ANALYSIS
+# GROQ
 # =========================
 
 def analyze_with_groq(news_list):
@@ -126,33 +211,13 @@ def analyze_with_groq(news_list):
     }
 
     news_text = "\n\n".join([
-        f"{item['title']}\n{item['url']}"
+        (
+            f"TITLE: {item['title']}\n"
+            f"SCORE: {item['local_score']}\n"
+            f"URL: {item['url']}"
+        )
         for item in news_list
     ])
-
-    system_prompt = """
-Ты AI-аналитик новостей.
-
-Верни ТОЛЬКО JSON массив.
-
-Для каждой важной новости верни:
-- title_ru
-- summary_ru
-- importance
-- category
-- url
-
-ПРАВИЛА:
-- максимум 4 новости
-- только действительно важные новости
-- игнорируй Reddit-мусор и слабые новости
-- summary_ru максимум 2 коротких предложения
-- весь текст только на русском языке
-- importance от 1 до 10
-- не добавляй markdown
-- не добавляй пояснений
-- не добавляй текст вне JSON
-"""
 
     data = {
         "model": "openai/gpt-oss-20b",
@@ -176,31 +241,50 @@ def analyze_with_groq(news_list):
         timeout=60
     )
 
-    print("GROQ STATUS:", response.status_code)
+    log(f"Groq status: {response.status_code}")
 
     if response.status_code != 200:
-        print(response.text)
+
+        log(response.text)
+
         return []
 
     result = response.json()["choices"][0]["message"]["content"]
 
-    print("\n=== RAW LLM RESPONSE ===\n")
-    print(result)
-
     try:
-        parsed = json.loads(result)
+
+        cleaned = result.strip()
+
+        # убрать markdown
+        cleaned = cleaned.replace("```json", "")
+        cleaned = cleaned.replace("```", "")
+
+        # найти JSON
+        start = cleaned.find("[")
+        end = cleaned.rfind("]")
+
+        if start != -1 and end != -1:
+            cleaned = cleaned[start:end + 1]
+
+        parsed = json.loads(cleaned)
+
+        if not isinstance(parsed, list):
+            raise Exception("LLM did not return list")
+
         return parsed
 
     except Exception as e:
 
-        print("JSON PARSE ERROR:", e)
+        log(f"JSON parse error: {e}")
+
+        log("RAW RESPONSE:")
+        log(result)
 
         send_telegram(
-            "⚠️ Ошибка парсинга JSON от LLM"
+            "⚠️ LLM вернула плохой JSON"
         )
 
         return []
-
 
 # =========================
 # TELEGRAM
@@ -208,7 +292,10 @@ def analyze_with_groq(news_list):
 
 def send_telegram(text):
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    url = (
+        f"https://api.telegram.org/bot"
+        f"{BOT_TOKEN}/sendMessage"
+    )
 
     response = requests.post(
         url,
@@ -219,8 +306,7 @@ def send_telegram(text):
         }
     )
 
-    print("TELEGRAM STATUS:", response.status_code)
-    print(response.text)
+    log(f"Telegram status: {response.status_code}")
 
 
 def send_news(news_json):
@@ -240,10 +326,23 @@ def send_news(news_json):
             f"sl=auto&tl=ru&u={item['url']}"
         )
 
+        importance = item.get("importance", 0)
+
+        if importance >= 8:
+            emoji = "🚨"
+
+        elif importance >= 6:
+            emoji = "🔥"
+
+        else:
+            emoji = "📰"
+
         text = (
-            f"🔥 {item['title_ru']}\n\n"
+            f"{emoji} {item['title_ru']}\n\n"
             f"{item['summary_ru']}\n\n"
-            f"📊 Важность: {item['importance']}/10\n"
+            f"💡 Почему важно:\n"
+            f"{item['why_relevant']}\n\n"
+            f"📊 Важность: {importance}/10\n"
             f"🏷 Категория: {item['category']}\n\n"
             f"🌍 Читать полностью (RU):\n"
             f"{translated_url}"
@@ -258,41 +357,40 @@ def send_news(news_json):
 
 def main():
 
-    print("\n=== AI NEWS AGENT STARTED ===\n")
+    log("=== AI NEWS AGENT STARTED ===")
 
     memory = load_memory()
 
-    print(f"MEMORY ITEMS: {len(memory)}")
+    log(f"Memory items: {len(memory)}")
 
     news = fetch_news(memory)
 
-    print(f"NEW NEWS FOUND: {len(news)}")
+    log(f"Filtered news: {len(news)}")
 
     if not news:
 
         send_telegram(
-            "🤖 Новых AI-новостей нет."
+            "🤖 Новых важных AI-новостей нет."
         )
 
         return
 
     analyzed_news = analyze_with_groq(news)
 
-    print("\n=== PARSED NEWS ===\n")
-    print(analyzed_news)
+    log(f"Analyzed news count: {len(analyzed_news)}")
 
     send_news(analyzed_news)
 
-    # SAVE MEMORY
+    # save memory
     for item in news:
         memory.append(item["id"])
 
-    # LIMIT MEMORY SIZE
-    memory = memory[-500:]
+    # limit memory
+    memory = memory[-config["max_memory_items"]:]
 
     save_memory(memory)
 
-    print("\n=== DONE ===\n")
+    log("=== DONE ===")
 
 
 if __name__ == "__main__":
