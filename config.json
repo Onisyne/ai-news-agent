@@ -10,7 +10,13 @@
     "https://www.reddit.com/r/singularity/.rss",
     "https://www.reddit.com/r/LocalLLaMA/.rss"
   ],
-
+    "extra_feeds": [
+    "https://hnrss.org/best?q=AI",
+    "https://arxiv.org/rss/cs.AI",
+    "https://arxiv.org/rss/cs.LG",
+    "https://github.com/langchain-ai/langchain/releases.atom",
+    "https://github.com/run-llama/llama_index/releases.atom"
+  ],
   "bad_words": [
     "hiring",
     "self-promotion",
@@ -42,6 +48,23 @@
     "multimodal"
   ],
 
-  "max_input_news": 15,
-  "max_memory_items": 1000
+  "max_input_news": 20,
+  "max_memory_items": 1000,
+  "min_llm_score": 2,
+  "penalty":1,
+  "TOP_N":6,
+  
+  "source_reputation": {
+   "openai.com": 10,
+   "anthropic.com": 10,
+   "blog.google": 9,
+   "huggingface.co": 8,
+   "github.com": 6,
+   "arxiv.org": 8,
+   "hnrss.org": 6,
+   "techcrunch.com": 6,
+   "thenextweb.com": 5,
+   "reddit.com": 3,
+   "news.ycombinator.com": 6
+  }
 }

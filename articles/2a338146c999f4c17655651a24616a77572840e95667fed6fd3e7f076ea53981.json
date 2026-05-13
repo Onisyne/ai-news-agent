@@ -1,0 +1,13 @@
+{
+  "id": "2a338146c999f4c17655651a24616a77572840e95667fed6fd3e7f076ea53981",
+  "title": "DramaBox - Most Expressive Voice model ever based on LTX 2.3",
+  "url": "https://www.reddit.com/r/LocalLLaMA/comments/1tc5wx1/dramabox_most_expressive_voice_model_ever_based/",
+  "article_text": "Your request has been blocked due to a network policy.\nTry logging in or creating an account here to get back to browsing.\nIf you're running a script or application, please register or sign in with your developer credentials here. Additionally make sure your User-Agent is not empty and is something unique and descriptive and try again. if you're supplying an alternate User-Agent string, try changing back to default as that can sometimes result in a block.\nYou can read Reddit's Terms of Service here.\nIf you think that we've incorrectly blocked you or you would like to discuss easier ways to get the data you want, please file a ticket here.\nWhen contacting us, please include your Reddit account along with the following code:\n019e2367-6eb8-7648-95e5-2d35df902e0a",
+  "local_score": 9,
+  "title_ru": "Mozilla использует Mythos от Anthropic для поиска и исправления 271 ошибки в Firefox",
+  "summary_ru": "Mozilla применила модель Mythos для обнаружения багов в Firefox, исправив 271 проблему. Это повышает надёжность браузера.",
+  "importance": 7,
+  "category": "security",
+  "why_relevant": "Улучшает безопасность и стабильность браузера.",
+  "timestamp": "2026-05-14T00:14:05.351503"
+}

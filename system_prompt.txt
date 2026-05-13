@@ -9,6 +9,7 @@
 - category
 - why_relevant
 - url
+- Return "id" exactly as provided in input.
 
 ПРАВИЛА:
 - максимум 6 новостей

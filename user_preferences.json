@@ -15,5 +15,12 @@
     "OpenAI",
     "Anthropic",
     "NVIDIA"
-  ]
+  ],
+  "topic_scores": {
+      "agents": 5,
+      "robotics": 5,
+      "local_llm": 8,
+      "automation": 7,
+      "open_source": 6
+    }
 }
